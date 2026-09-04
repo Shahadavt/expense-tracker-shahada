@@ -212,6 +212,58 @@ function loadTransactions() {
 
         transactions = [];
     }
+
+    const seededTransactions = createMonthlyTransactions();
+
+    const existingIds = new Set(
+        transactions.map(transaction => transaction.id)
+    );
+
+    const missingTransactions = seededTransactions.filter(
+        transaction => !existingIds.has(transaction.id)
+    );
+
+    if (missingTransactions.length > 0) {
+
+        transactions = [
+            ...transactions,
+            ...missingTransactions
+        ];
+
+        saveTransactions();
+    }
+}
+
+
+function createMonthlyTransactions() {
+
+    const year = new Date().getFullYear();
+    const transactions = [];
+
+    for (let month = 0; month < 12; month++) {
+
+        const monthNumber = String(month + 1).padStart(2, "0");
+
+        transactions.push({
+            id: year * 1000000 + month * 2 + 1,
+            type: "expense",
+            amount: 1500 + (month * 35),
+            category: "Bills",
+            date: `${year}-${monthNumber}-05`,
+            description: "Current electricity bill"
+        });
+
+        transactions.push({
+            id: year * 1000000 + month * 2 + 2,
+            type: "expense",
+            amount: 1800 + (month * 75),
+            category: "Travel",
+            date: `${year}-${monthNumber}-15`,
+            description: "Monthly transport"
+        });
+    }
+
+    return transactions;
 }
 
 
